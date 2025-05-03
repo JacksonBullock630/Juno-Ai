@@ -1,0 +1,45 @@
+import os
+
+class ContentModerator:
+    def __init__(self):
+        self.blocked_keywords = ["hate", "violence", "inappropriate"]  # Add more as needed
+
+    def is_allowed(self, text):
+        for keyword in self.blocked_keywords:
+            if keyword in text.lower():
+                return False
+        return True
+class Chatbot:
+    def __init__(self, storage_file="chat_history.txt"):
+        self.storage_file = storage_file
+        self.knowledge_base = []
+        self.moderator = ContentModerator()
+        # Ensure the file exists
+        if not os.path.exists(self.storage_file):
+            with open(self.storage_file, "w") as file:
+                pass
+
+    def save_to_file(self, text):
+        with open(self.storage_file, "a") as file:
+            file.write(text + "\n")
+
+    def learn(self, text):
+        self.knowledge_base.append(text)
+
+    def chat(self):
+        print("Hello! I am Scholar Juno. Type 'exit' to end the chat.")
+        while True:
+            user_input = input("You: ")
+            if user_input.lower() == "exit":
+                print("Goodbye!")
+                break
+            if not self.moderator.is_allowed(user_input):
+                print("Scholar Juno: Your input contains inappropriate content and cannot be processed.")
+                continue
+            self.save_to_file(user_input)
+            self.learn(user_input)
+            print(f"Scholar Juno: I have saved and learned from your input: '{user_input}'")
+
+if __name__ == "__main__":
+    bot = Chatbot()
+    bot.chat()
